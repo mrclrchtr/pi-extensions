@@ -35,7 +35,6 @@ Each extension lives in its own directory with a single `.ts` entry file. Extens
 "pi": {
   "extensions": [
     "./aliases/aliases.ts",
-    "./update-notifier/update-notifier.ts",
     "./bash-timeout/index.ts",
     "./skill-shortcut/skill-shortcut.ts"
   ],
@@ -85,7 +84,6 @@ The most complex extension. It wraps pi-tui's `AutocompleteProvider` and `Custom
 
 | Variable | Extension | Effect |
 |---|---|---|
-| `PI_SKIP_AUTO_UPDATE` | update-notifier | Disables startup version check |
 | `PI_BASH_DEFAULT_TIMEOUT` | bash-timeout | Overrides default timeout in seconds (default: 120) |
 
 ## Reading pi docs

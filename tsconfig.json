@@ -12,7 +12,6 @@
   },
   "include": [
     "aliases/**/*.ts",
-    "update-notifier/**/*.ts",
     "bash-timeout/**/*.ts",
     "skill-shortcut/**/*.ts"
   ],
