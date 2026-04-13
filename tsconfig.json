@@ -10,10 +10,6 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "aliases/**/*.ts",
-    "bash-timeout/**/*.ts",
-    "skill-shortcut/**/*.ts"
-  ],
+  "include": ["aliases/**/*.ts", "bash-timeout/**/*.ts", "skill-shortcut/**/*.ts"],
   "exclude": ["node_modules"]
 }

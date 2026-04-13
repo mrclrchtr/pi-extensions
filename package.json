@@ -4,7 +4,23 @@
   "description": "Personal pi extensions — aliases, bash-timeout, skill-shortcut",
   "packageManager": "pnpm@10.33.0",
   "license": "MIT",
-  "keywords": ["pi-package", "pi", "pi-coding-agent"],
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-coding-agent"
+  ],
+  "scripts": {
+    "biome": "biome check",
+    "biome:fix": "biome check --write --error-on-warnings",
+    "biome:ci": "biome ci",
+    "biome:ai": "biome ci --colors=off --reporter=github",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "pnpm biome",
+    "check:fix": "pnpm biome:fix"
+  },
   "peerDependencies": {
     "@mariozechner/pi-coding-agent": "~0.66.0",
     "@mariozechner/pi-tui": "~0.66.0"
@@ -18,5 +34,8 @@
       "./bash-timeout/index.ts",
       "./skill-shortcut/skill-shortcut.ts"
     ]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.11"
   }
 }

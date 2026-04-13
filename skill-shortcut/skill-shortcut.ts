@@ -5,7 +5,6 @@ import {
   type AutocompleteProvider,
   type AutocompleteSuggestions,
   fuzzyFilter,
-  matchesKey,
 } from "@mariozechner/pi-tui";
 
 /**
@@ -18,11 +17,22 @@ import {
 
 const DELIMITERS = new Set([" ", "\t", "\n"]);
 
+type EditorInternals = {
+  autocompleteState?: unknown;
+  state?: {
+    lines?: string[];
+    cursorLine?: number;
+    cursorCol?: number;
+  };
+  tryTriggerAutocomplete?: () => void;
+};
+
 /** Find the `$token` at the cursor, or null if not in one. */
 function extractDollarPrefix(textBeforeCursor: string): string | null {
   // Walk backwards to find the start of the current token
   for (let i = textBeforeCursor.length - 1; i >= 0; i--) {
-    if (DELIMITERS.has(textBeforeCursor[i]!)) {
+    const char = textBeforeCursor[i];
+    if (char && DELIMITERS.has(char)) {
       // Hit a delimiter — the token starts at i+1
       const token = textBeforeCursor.slice(i + 1);
       return token.startsWith("$") ? token : null;
@@ -37,14 +47,14 @@ function extractDollarPrefix(textBeforeCursor: string): string | null {
 class SkillShortcutAutocomplete implements AutocompleteProvider {
   constructor(
     private inner: AutocompleteProvider,
-    private skillCommands: { name: string; description?: string }[]
+    private skillCommands: { name: string; description?: string }[],
   ) {}
 
   async getSuggestions(
     lines: string[],
     cursorLine: number,
     cursorCol: number,
-    options: { signal: AbortSignal; force?: boolean }
+    options: { signal: AbortSignal; force?: boolean },
   ): Promise<AutocompleteSuggestions | null> {
     const textBeforeCursor = (lines[cursorLine] || "").slice(0, cursorCol);
     const dollarPrefix = extractDollarPrefix(textBeforeCursor);
@@ -66,12 +76,13 @@ class SkillShortcutAutocomplete implements AutocompleteProvider {
     return this.inner.getSuggestions(lines, cursorLine, cursorCol, options);
   }
 
+  // biome-ignore lint/complexity/useMaxParams: This method must match the AutocompleteProvider interface.
   applyCompletion(
     lines: string[],
     cursorLine: number,
     cursorCol: number,
     item: AutocompleteItem,
-    prefix: string
+    prefix: string,
   ) {
     if (prefix.startsWith("$")) {
       const line = lines[cursorLine] || "";
@@ -98,13 +109,11 @@ class SkillShortcutEditor extends CustomEditor {
   }
 
   override setAutocompleteProvider(provider: AutocompleteProvider) {
-    super.setAutocompleteProvider(
-      new SkillShortcutAutocomplete(provider, this._skillCommands)
-    );
+    super.setAutocompleteProvider(new SkillShortcutAutocomplete(provider, this._skillCommands));
   }
 
   override handleInput(data: string): void {
-    const self = this as any;
+    const self = this as unknown as EditorInternals;
     const wasShowingAutocomplete = !!self.autocompleteState;
 
     super.handleInput(data);

@@ -17,3 +17,15 @@ pi install /path/to/pi-extensions
 # or from git
 pi install git:github.com/mrclrchtr/pi-extensions
 ```
+
+## Development
+
+```bash
+pnpm install
+pnpm biome
+pnpm biome:fix
+pnpm biome:ci
+pnpm biome:ai
+```
+
+Biome is configured in `biome.jsonc` with formatting, import organization, recommended lint rules, and stricter project/types/test plus aggressive complexity and nursery rules.

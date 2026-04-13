@@ -21,8 +21,17 @@ pi install git:github.com/mrclrchtr/pi-extensions
 # Install dependencies
 pnpm install
 
-# Type-check all extensions (no emit)
-pnpm exec tsc --noEmit
+# Local Biome check
+pnpm biome
+
+# Apply Biome fixes and fail on warnings
+pnpm biome:fix
+
+# CI-style Biome run
+pnpm biome:ci
+
+# AI-friendly CI output
+pnpm biome:ai
 ```
 
 Toolchain versions are managed via mise (`node = "lts"`, `pnpm = "latest"`).
