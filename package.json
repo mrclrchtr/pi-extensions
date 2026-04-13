@@ -1,0 +1,20 @@
+{
+  "name": "pi-extensions",
+  "version": "0.1.0",
+  "description": "Personal pi extensions — aliases, update-notifier, bash-timeout, skill-shortcut",
+  "packageManager": "pnpm@10.33.0",
+  "license": "MIT",
+  "keywords": ["pi-package", "pi", "pi-coding-agent"],
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "~0.66.0",
+    "@mariozechner/pi-tui": "~0.66.0"
+  },
+  "pi": {
+    "extensions": [
+      "./aliases/aliases.ts",
+      "./update-notifier/update-notifier.ts",
+      "./bash-timeout/index.ts",
+      "./skill-shortcut/skill-shortcut.ts"
+    ]
+  }
+}

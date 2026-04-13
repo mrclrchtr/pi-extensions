@@ -1,0 +1,3 @@
+allowBuilds:
+  koffi: true
+  protobufjs: true
