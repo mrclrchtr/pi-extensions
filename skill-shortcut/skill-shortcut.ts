@@ -126,10 +126,13 @@ class SkillShortcutEditor extends CustomEditor {
     // Skip for control sequences (arrows, enter, escape, etc.)
     if (data.length !== 1 || data.charCodeAt(0) < 32) return;
 
-    const lines: string[] = self.state?.lines;
-    const cursorLine: number = self.state?.cursorLine;
-    const cursorCol: number = self.state?.cursorCol;
-    if (!lines) return;
+    // biome-ignore lint/suspicious/noExplicitAny: accessing private TUI internals
+    const lines: string[] | undefined = (self as any).state?.lines;
+    // biome-ignore lint/suspicious/noExplicitAny: accessing private TUI internals
+    const cursorLine: number | undefined = (self as any).state?.cursorLine;
+    // biome-ignore lint/suspicious/noExplicitAny: accessing private TUI internals
+    const cursorCol: number | undefined = (self as any).state?.cursorCol;
+    if (!lines || cursorLine === undefined || cursorCol === undefined) return;
 
     const textBeforeCursor = (lines[cursorLine] || "").slice(0, cursorCol);
     const dollarPrefix = extractDollarPrefix(textBeforeCursor);
