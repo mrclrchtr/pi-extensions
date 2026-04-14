@@ -23,9 +23,11 @@ Built for the [pi coding agent](https://github.com/mariozechner/pi-coding-agent)
 ## Install
 
 ```bash
-pi install /path/to/SuPi
+pi install npm:@mrclrchtr/supi
 # or from git
 pi install git:github.com/mrclrchtr/SuPi
+# or from a local checkout
+pi install /path/to/SuPi
 ```
 
 When installed from a local path, pi loads the working tree directly; after edits, use `/reload` or restart pi to pick up extension changes.
@@ -52,12 +54,46 @@ Configuration:
 
 ```bash
 pnpm install
-pnpm exec tsc --noEmit
+pnpm typecheck
 pnpm biome
 pnpm biome:fix
 pnpm biome:ci
 pnpm biome:ai
 pnpm test
+pnpm pack:check
+pnpm verify
 ```
 
 Biome is configured in `biome.jsonc` with formatting, import organization, recommended lint rules, and stricter project/types/test plus aggressive complexity and nursery rules.
+
+## Publishing
+
+Pi package docs require a `pi` manifest (already present) and recommend the `pi-package` keyword for discoverability. This package publishes the TypeScript source directly — pi loads extensions without a build step.
+
+GitHub Actions handles verification and releases:
+
+- `CI` runs typecheck, Biome, Vitest, and `npm pack --dry-run`
+- `Conventional Commits` lints PR titles and commit messages
+- `Release` runs on pushes to `main`, uses `semantic-release` to determine the next version from Conventional Commits, publishes to npm, tags the release, and creates GitHub release notes
+
+### One-time setup
+
+- Ensure the publishing account owns the `@mrclrchtr` npm scope
+- Add an npm automation token as the `NPM_TOKEN` GitHub repository secret
+- Use Conventional Commits on merges to `main` so `semantic-release` can compute versions (`feat:` = minor, `fix:` = patch, `!` / `BREAKING CHANGE:` = major)
+- Be aware that semantic-release starts first stable releases at `1.0.0`
+
+### Release flow
+
+```bash
+pnpm verify
+git push origin main
+```
+
+`semantic-release` handles version calculation, tagging, npm publishing, and GitHub release notes automatically. You can smoke-test the configuration locally with:
+
+```bash
+pnpm release -- --dry-run --no-ci
+```
+
+Note: local dry-runs still need git access to the GitHub remote in order to verify tagging permissions.

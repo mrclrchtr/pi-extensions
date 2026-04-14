@@ -1,13 +1,34 @@
 {
-  "name": "supi",
+  "name": "@mrclrchtr/supi",
   "version": "0.1.0",
   "description": "SuPi (Super Pi) — The opinionated way to extend PI",
   "packageManager": "pnpm@10.33.0",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrclrchtr/SuPi.git"
+  },
+  "homepage": "https://github.com/mrclrchtr/SuPi#readme",
+  "bugs": {
+    "url": "https://github.com/mrclrchtr/SuPi/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "pi-package",
     "pi",
     "pi-coding-agent"
+  ],
+  "files": [
+    "aliases/*.ts",
+    "bash-timeout/*.ts",
+    "lsp/*.ts",
+    "lsp/*.json",
+    "prompts/*.md",
+    "skill-shortcut/*.ts",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "biome": "biome check",
@@ -18,8 +39,12 @@
     "lint:fix": "biome lint --write .",
     "format": "biome format --write .",
     "format:check": "biome format .",
+    "typecheck": "tsc --noEmit",
+    "pack:check": "npm pack --dry-run",
+    "release": "semantic-release",
     "check": "pnpm biome",
     "check:fix": "pnpm biome:fix",
+    "verify": "pnpm typecheck && pnpm biome:ai && pnpm test && pnpm pack:check",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -41,6 +66,14 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.11",
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/github": "^12.0.6",
+    "@semantic-release/npm": "^13.1.5",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "semantic-release": "^25.0.3",
+    "typescript": "^6.0.2",
     "vitest": "^4.1.4"
   }
 }
