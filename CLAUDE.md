@@ -4,15 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Personal extensions for the [pi coding agent](https://github.com/mariozechner/pi-coding-agent) (`@mariozechner/pi-coding-agent`). Extensions are loaded directly as TypeScript by pi — there is no build step.
+SuPi (**Super Pi**) is an opinionated extension repo for the [pi coding agent](https://github.com/mariozechner/pi-coding-agent) (`@mariozechner/pi-coding-agent`).
+
+**Slogan:** *The opinionated way to extend PI.*
+
+It is my curated extension stack for PI, with LSP, Skills, marketplace compatibility, and personal best practices built in. Extensions are loaded directly as TypeScript by pi — there is no build step.
 
 Extensions sourced from [joelhooks/pi-tools](https://github.com/joelhooks/pi-tools).
 
 Install into pi:
 ```bash
-pi install /path/to/pi-extensions
+pi install /path/to/SuPi
 # or
-pi install git:github.com/mrclrchtr/pi-extensions
+pi install git:github.com/mrclrchtr/SuPi
 ```
 
 ## Commands

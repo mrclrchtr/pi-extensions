@@ -1,6 +1,15 @@
-# pi-extensions
+# SuPi
 
-Personal [pi coding agent](https://github.com/mariozechner/pi-coding-agent) extensions.
+**Super Pi**
+
+*The opinionated way to extend PI.*
+
+SuPi is an opinionated extension repo for PI with LSP, Skills, marketplace compatibility, and personal best practices built in.
+
+- SuPi is my curated extension stack for PI.
+- SuPi makes PI extensible, interoperable, and sane by default.
+
+Built for the [pi coding agent](https://github.com/mariozechner/pi-coding-agent).
 
 ## Extensions
 
@@ -14,9 +23,9 @@ Personal [pi coding agent](https://github.com/mariozechner/pi-coding-agent) exte
 ## Install
 
 ```bash
-pi install /path/to/pi-extensions
+pi install /path/to/SuPi
 # or from git
-pi install git:github.com/mrclrchtr/pi-extensions
+pi install git:github.com/mrclrchtr/SuPi
 ```
 
 When installed from a local path, pi loads the working tree directly; after edits, use `/reload` or restart pi to pick up extension changes.

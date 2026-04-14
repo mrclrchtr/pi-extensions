@@ -1,7 +1,7 @@
 {
-  "name": "pi-extensions",
+  "name": "supi",
   "version": "0.1.0",
-  "description": "Personal pi extensions — aliases, bash-timeout, skill-shortcut",
+  "description": "SuPi (Super Pi) — The opinionated way to extend PI",
   "packageManager": "pnpm@10.33.0",
   "license": "MIT",
   "keywords": [
