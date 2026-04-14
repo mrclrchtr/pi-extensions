@@ -78,7 +78,8 @@ GitHub Actions handles verification and releases:
 
 - `CI` runs typecheck, Biome, Vitest, and `npm pack --dry-run`
 - `Conventional Commits` lints PR titles and commit messages
-- `Release` runs on pushes to `main`, uses `semantic-release` to determine the next version from Conventional Commits, publishes to npm, tags the release, and creates GitHub release notes
+- `Actionlint` validates GitHub Actions workflows
+- `Release` runs on pushes to `main`, waits for the required checks (`verify`, `actionlint`, `commit-messages`) to succeed, then uses `semantic-release` to determine the next version, publish to npm, tag the release, and create GitHub release notes
 
 ### One-time setup
 
@@ -94,7 +95,7 @@ pnpm verify
 git push origin main
 ```
 
-`semantic-release` handles version calculation, tagging, npm publishing, and GitHub release notes automatically. You can smoke-test the configuration locally with:
+`semantic-release` handles version calculation, tagging, npm publishing, and GitHub release notes automatically, but the GitHub release workflow will only publish after the required checks on `main` have passed. You can smoke-test the configuration locally with:
 
 ```bash
 pnpm release -- --dry-run --no-ci
