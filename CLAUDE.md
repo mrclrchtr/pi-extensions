@@ -21,17 +21,23 @@ pi install git:github.com/mrclrchtr/pi-extensions
 # Install dependencies
 pnpm install
 
-# Local Biome check
-pnpm biome
+# Type-check all extensions (no emit)
+pnpm exec tsc --noEmit
 
-# Apply Biome fixes and fail on warnings
-pnpm biome:fix
-
-# CI-style Biome run
-pnpm biome:ci
-
-# AI-friendly CI output
+# Lint/format check (AI-friendly output)
 pnpm biome:ai
+
+# Auto-fix lint/format issues, then verify
+pnpm biome:fix && pnpm biome:ai
+
+# Scannable biome error list (one line per issue)
+pnpm biome:ci --colors=off 2>&1 | grep '\.ts:'
+
+# Run all tests (unit + integration)
+pnpm test
+
+# Watch mode
+pnpm test:watch
 ```
 
 Toolchain versions are managed via mise (`node = "lts"`, `pnpm = "latest"`).
@@ -45,7 +51,8 @@ Each extension lives in its own directory with a single `.ts` entry file. Extens
   "extensions": [
     "./aliases/aliases.ts",
     "./bash-timeout/index.ts",
-    "./skill-shortcut/skill-shortcut.ts"
+    "./skill-shortcut/skill-shortcut.ts",
+    "./lsp/lsp.ts"
   ],
   "prompts": [
     "./prompts"
@@ -84,6 +91,19 @@ export default function (pi: ExtensionAPI) {
 - `ctx.ui.setWidget(id, lines)` — shows/clears a persistent UI widget
 - `ctx.ui.notify(message, level)` — one-shot notification
 - `ctx.ui.setEditorComponent(factory)` — replaces the prompt editor component
+- `pi.registerTool({ name, label, description, parameters, execute })` — registers a custom tool; `parameters` uses `Type.Object()` from `@sinclair/typebox`; `execute(toolCallId, params, signal, onUpdate, ctx)` returns `{ content, details }`
+- `pi.on("tool_result", async (event, ctx) => …)` — runs after tool execution; return `{ content }` to patch result
+- `pi.on("session_shutdown", async () => …)` — fires before session teardown; clean up subprocesses here
+
+### LSP extension
+
+Provides Language Server Protocol integration — type-aware hover, go-to-definition, find-references, diagnostics, rename, code-actions, and document-symbols via a registered `lsp` tool. Intercepts `write`/`edit` to surface blocking diagnostics inline.
+
+Files: `lsp/lsp.ts` (entry), `lsp/client.ts` (LSP client lifecycle), `lsp/transport.ts` (JSON-RPC), `lsp/config.ts` (server config), `lsp/manager.ts` (server pool), `lsp/tool-actions.ts` (tool dispatch), `lsp/diagnostics.ts` (formatting), `lsp/utils.ts` (URI/language/path utils), `lsp/types.ts` (LSP types), `lsp/defaults.json` (server definitions).
+
+Commands: `/lsp-status` — shows active servers, open files, and diagnostics summary.
+
+Per-project config: `.pi-lsp.json` in project root to override/add/disable servers. YAML is not supported (no YAML parser dependency).
 
 ### Skill-shortcut extension
 
@@ -94,6 +114,9 @@ The most complex extension. It wraps pi-tui's `AutocompleteProvider` and `Custom
 | Variable | Extension | Effect |
 |---|---|---|
 | `PI_BASH_DEFAULT_TIMEOUT` | bash-timeout | Overrides default timeout in seconds (default: 120) |
+| `PI_LSP_DISABLED` | lsp | Set to `1` to disable all LSP functionality |
+| `PI_LSP_SERVERS` | lsp | Comma-separated allow-list of server names (e.g., `rust-analyzer,pyright`) |
+| `PI_LSP_SEVERITY` | lsp | Inline severity threshold: `1`=errors only (default), `2`=+warnings, `3`=+info, `4`=+hints |
 
 ## Reading pi docs
 
@@ -126,3 +149,15 @@ Key docs to reach for first:
 - **`skill-shortcut` accesses private TUI internals**: `SkillShortcutEditor` casts `this as any` to reach `autocompleteState`, `state`, and `tryTriggerAutocomplete`. These are undocumented internals and may break on `@mariozechner/pi-tui` upgrades — verify after bumping.
 - **`bash-timeout` entry point is `index.ts`**: all other extensions use `dir/dir.ts` naming; `bash-timeout` uses `bash-timeout/index.ts`. This is intentional (copied from source) but inconsistent.
 - **Prompt template frontmatter**: only `description:` is supported; Claude-specific keys like `allowed-tools` are silently ignored — strip them when porting Claude commands.
+- **`@sinclair/typebox` is a peerDependency**: it's a runtime import (used by `lsp/lsp.ts`) so it must be in `peerDependencies`. pnpm auto-installs it locally for type-checking. Putting it in `devDependencies` breaks `pi install npm:...`. Avoid `@mariozechner/pi-ai`'s `StringEnum` — use `Type.Union(Type.Literal(...))` instead to keep the dep tree smaller.
+- **`ctx.ui.notify()` level is `"warning"` not `"warn"`**: valid values are `"error" | "warning" | "info"`.
+- **`pi.on("tool_result")` modifies results; `pi.on("tool_call")` only blocks**: use `tool_result` to append diagnostics or context to tool output. Return `{ content, details, isError }` to patch.
+- **Session cleanup event is `session_shutdown`** not `session_end`: use for tearing down subprocesses, connections, etc.
+- **JSON imports**: avoid `import X from "./file.json" with { type: "json" }` — it errors under some tsconfig modes. Use `JSON.parse(fs.readFileSync(path.join(__dirname, "file.json"), "utf-8"))` instead. pi's jiti loader always provides `__dirname`.
+- **openspec PostHog errors are harmless**: the CLI emits `PostHogFetchNetworkError` when offline — ignore.
+- **Biome config is `biome.jsonc`** (not `biome.json`): all rule overrides go there. Inline `biome-ignore` comments don't work for file-level nursery rules like `noExcessiveLinesPerFile` — must split the file or raise the threshold in `biome.jsonc`.
+- **Prefer `Type.Union(Type.Literal(...))` over `StringEnum`**: avoids adding `@mariozechner/pi-ai` as a runtime/peer dep. Only `@sinclair/typebox` is needed for tool parameter schemas.
+- **`skill-shortcut` needs `biome-ignore` for `noExplicitAny`**: the `as any` casts accessing private TUI internals are intentional — each needs an inline `// biome-ignore lint/suspicious/noExplicitAny: accessing private TUI internals` comment.
+- **Test framework is vitest**: unit tests at `lsp/__tests__/*.test.ts`, integration tests at `*.integration.test.ts`. Integration tests use `describe.skipIf(!HAS_CMD)` to auto-skip when LSP servers aren't on PATH.
+- **Always run `biome check --write` on new test files**: biome enforces import order and formatting that won't match hand-written code. Fix first, then verify with `biome:ai`.
+- **Unhandled promise rejections fail vitest**: if production code rejects promises during cleanup (e.g., `dispose()`), add `promise.catch(() => {})` at creation to prevent vitest from catching them as test errors.

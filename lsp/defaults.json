@@ -1,0 +1,40 @@
+{
+  "servers": {
+    "typescript-language-server": {
+      "command": "typescript-language-server",
+      "args": ["--stdio"],
+      "fileTypes": ["ts", "tsx", "js", "jsx", "mts", "cts", "mjs", "cjs"],
+      "rootMarkers": ["tsconfig.json", "jsconfig.json", "package.json"]
+    },
+    "pyright": {
+      "command": "pyright-langserver",
+      "args": ["--stdio"],
+      "fileTypes": ["py", "pyi"],
+      "rootMarkers": [
+        "pyproject.toml",
+        "setup.py",
+        "setup.cfg",
+        "requirements.txt",
+        "pyrightconfig.json"
+      ]
+    },
+    "rust-analyzer": {
+      "command": "rust-analyzer",
+      "args": [],
+      "fileTypes": ["rs"],
+      "rootMarkers": ["Cargo.toml"]
+    },
+    "gopls": {
+      "command": "gopls",
+      "args": ["serve"],
+      "fileTypes": ["go", "mod"],
+      "rootMarkers": ["go.mod", "go.sum"]
+    },
+    "clangd": {
+      "command": "clangd",
+      "args": ["--background-index"],
+      "fileTypes": ["c", "h", "cpp", "hpp", "cc", "cxx", "hxx", "c++", "h++"],
+      "rootMarkers": ["compile_commands.json", "CMakeLists.txt", ".clangd", "Makefile"]
+    }
+  }
+}

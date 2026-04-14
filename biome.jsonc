@@ -59,7 +59,12 @@
         "noExplicitAny": "error"
       },
       "nursery": {
-        "noExcessiveLinesPerFile": "error",
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": {
+            "maxLines": 400
+          }
+        },
         "noFloatingPromises": "error",
         "noMisusedPromises": "error",
         "noNestedPromises": "error",

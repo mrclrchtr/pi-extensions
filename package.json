@@ -19,11 +19,14 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "check": "pnpm biome",
-    "check:fix": "pnpm biome:fix"
+    "check:fix": "pnpm biome:fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "peerDependencies": {
     "@mariozechner/pi-coding-agent": "~0.66.0",
-    "@mariozechner/pi-tui": "~0.66.0"
+    "@mariozechner/pi-tui": "~0.66.0",
+    "@sinclair/typebox": ">=0.34.0"
   },
   "pi": {
     "prompts": [
@@ -32,10 +35,12 @@
     "extensions": [
       "./aliases/aliases.ts",
       "./bash-timeout/index.ts",
-      "./skill-shortcut/skill-shortcut.ts"
+      "./skill-shortcut/skill-shortcut.ts",
+      "./lsp/lsp.ts"
     ]
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.11"
+    "@biomejs/biome": "^2.4.11",
+    "vitest": "^4.1.4"
   }
 }
