@@ -11,6 +11,7 @@ fail_fast = true
 exclude =
   List(
     "node_modules",
+    ".agents",
     ".git",
     ".idea",
     ".claude",
